@@ -7,7 +7,7 @@ penguinPromise. then(
     quizgrade(classroom);*/
     console.log(makear(classroom, 0));
 var getday = makear(classroom, 0);
-    makegraph(classroom)    
+    makegraph(classroom, 0)    
     })
 var screen = {width: 600,
              height:500}
@@ -31,18 +31,17 @@ var setup = function(quizes)
 var getquiz = function(penguin)
     {
     return penguin.quizes[0].grade;
-    
     }
 
 var makear = function(classroom, day)
         {
-        
-    
         return classroom.map(function(penguin)
         {
         return penguin.quizes[day].grade;
         })
         }
+// the x and Y attributes don't show up but the "r" does.
+//the array for day 1 is made.
 var makegraph = function(getday)
     {
     d3.select("svg").selectAll("circle")
@@ -58,5 +57,5 @@ var makegraph = function(getday)
      return classroom.quizes.grade
     }
     )
-    .attr("r",2)    
+    .attr("r",4)    
     }
