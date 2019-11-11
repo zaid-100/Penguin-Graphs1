@@ -1,30 +1,28 @@
-var penguinPromise=d3.json("classData.json");
-penguinPromise. then(
-    function(classroom) 
+var penguinPromise= d3.json("classData.json");
+penguinPromise.then(
+    function(classroom, day) 
     {    
     console.log("works",classroom);                     /* setup(classroom);
     drawGraph(classroom);
     quizgrade(classroom);*/
     console.log(makear(classroom, 0));
 var getday = makear(classroom, 0);
-    makegraph(classroom, 0)    
+    makegraph(getday, 0) ;
+    setup(classroom);
     })
 var screen = {width: 600,
              height:500}
-var setup = function(quizes)
+var setup = function(classroom)
     {
     d3.select("svg")
-    .attr("width",screen.width)
-    .attr("height",screen.height)
+    .attr("width",600)
+    .attr("height",500);
 
     var xscale = d3.scaleLinear()
-    xscale.domain([0,d3.max(quizes.grade,function(d){
-    return d.grade
-    })])
-    xscale.range([0,screen.width]);
+    xscale.domain([0,39])
+    xscale.range([screen.width,0]);
     var yscale= d3.scaleLinear()
-    yscale.domain(
-    d3.min(quizes, function(d){return    d.grade}),d3.max(quizes,function(d){return d.quizes.grade}))
+    yscale.domain([0,screen.width])
     yscale.range([screen.height,0]);
     }
 
@@ -32,10 +30,10 @@ var getquiz = function(penguin)
     {
     return penguin.quizes[0].grade;
     }
-
+// array Function
 var makear = function(classroom, day)
         {
-        return classroom.map(function(penguin)
+        return classroom.map(function(penguin, day)
         {
         return penguin.quizes[day].grade;
         })
@@ -48,14 +46,36 @@ var makegraph = function(getday)
     .data(getday)
     .enter()
     .append("circle")
-    .attr("cx", function(classroom)
+    .attr("cx", function(getday, day)
     {
-    return classroom.quizes.day   
+    return day*10
     })
-    .attr("cy",function(classroom)
+    .attr("cy",function(getday)
     {
-     return classroom.quizes.grade
+     return getday*10
     }
     )
     .attr("r",4)    
     }
+
+d3.select("#next").on("click", function (d)
+{   d3.selectAll("circle").remove();
+    var dayinc = function(classroom, day)
+        {
+            console.log("works")
+        return classroom.map(function(penguin, day)
+        {
+        return penguin.quizes[day+1].grade;
+        }
+        )
+        var getday = dayinc(classroom, day);
+            console.log("working");
+            makegraph(getday, day) ;    
+        }
+    dayinc(classroom, day);
+    makegraph(getday, day);
+})
+
+
+
+/*d3.min(quizes, function(d){return    d.grade}),d3.max(quizes,function(d){return d.quizes.grade})*/
