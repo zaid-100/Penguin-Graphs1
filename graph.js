@@ -1,81 +1,77 @@
 var penguinPromise= d3.json("classData.json");
-penguinPromise.then(
-    function(classroom, day) 
-    {    
-    console.log("works",classroom);                     /* setup(classroom);
-    drawGraph(classroom);
-    quizgrade(classroom);*/
-    console.log(makear(classroom, 0));
-var getday = makear(classroom, 0);
-    makegraph(getday, 0) ;
-    setup(classroom);
-    })
-var screen = {width: 600,
-             height:500}
-var setup = function(classroom)
-    {
-    d3.select("svg")
-    .attr("width",600)
-    .attr("height",500);
-
-    var xscale = d3.scaleLinear()
-    xscale.domain([0,39])
-    xscale.range([screen.width,0]);
-    var yscale= d3.scaleLinear()
-    yscale.domain([0,screen.width])
-    yscale.range([screen.height,0]);
-    }
-
-var getquiz = function(penguin)
-    {
-    return penguin.quizes[0].grade;
-    }
-// array Function
-var makear = function(classroom, day)
-        {
-        return classroom.map(function(penguin, day)
-        {
-        return penguin.quizes[day].grade;
-        })
-        }
-// the x and Y attributes don't show up but the "r" does.
-//the array for day 1 is made.
-var makegraph = function(getday)
-    {
-    d3.select("svg").selectAll("circle")
-    .data(getday)
-    .enter()
-    .append("circle")
-    .attr("cx", function(getday, day)
-    {
-    return day*10
-    })
-    .attr("cy",function(getday)
-    {
-     return getday*10
-    }
-    )
-    .attr("r",4)    
-    }
-
-d3.select("#next").on("click", function (d)
-{   d3.selectAll("circle").remove();
-    var dayinc = function(classroom, day)
-        {
-            console.log("works")
-        return classroom.map(function(penguin, day)
-        {
-        return penguin.quizes[day+1].grade;
+penguinPromise.then(function(classroom)
+{
+ var EveryDay = d3.range(39)
+console.log("classroom", classroom);
+ var daysummary = getGrade(classroom, 0)  
+ console.log(daysummary)
+    console.log(Data(daysummary))
+    setup(Data(daysummary))
+    EveryDay.forEach(function(num)
+            {
+        term(classroom, num)
         }
         )
-        var getday = dayinc(classroom, day);
-            console.log("working");
-            makegraph(getday, day) ;    
-        }
-    dayinc(classroom, day);
-    makegraph(getday, day);
-})
+    Data(daysummary);
+}
+,    
+ function(err)
+{console.log("fail", err) })
 
 
+var getGrade = function(classroom, day)
+{
+    var quizGrade = classroom.map(function(d)
+    {
+    return    d.quizes[day].grade
+   })
+    return quizGrade;
+}
 
-/*d3.min(quizes, function(d){return    d.grade}),d3.max(quizes,function(d){return d.quizes.grade})*/
+var term = function(classroom, day)
+{
+    d3.select("body")
+    .append("button")
+    .text("day" + day).on("click", function ()
+    {
+        var daysummary = getGrade(classroom, day)
+        d3.selectAll("svg *").remove()
+        setup(Data(daysummary))
+    })
+    }
+var Data = function(daysummary)
+{
+    var cords = daysummary.map(function(quiz, i)
+    {return {x : i,
+        y: quiz}
+    
+    })
+    return cords
+}
+var screen = {
+    width: 1000, height: 800
+}
+  var setup = function(cords)
+  {
+      var xScale = d3.scaleLinear()
+      xScale.domain([0,22])
+      xScale.range([screen.width,0])
+      
+      var yscale = d3.scaleLinear()
+      yscale.domain([10,0])
+      yscale.range([screen.width,0])
+      drawcords(cords, xScale, yscale)
+      }
+    var drawcords = function(cords , xScale, yscale)
+    {
+        d3.select("svg")
+        .attr("height", screen.height)
+        .attr("width", screen.width)
+        .selectAll("circle").data(cords).enter()
+        .append("circle")
+        .attr("cx", function(p) {return xScale(p.x)})
+        .attr("cy", function(p){return yscale(p.y)})
+        .attr("r", 4)
+    }
+    var penguinPromise= d3.json("classData.json");
+    var Days = d3.range(1,39)
